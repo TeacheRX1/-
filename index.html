@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>واجهة إرسال رسالة</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #222;
+    color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .container {
+    background: #333;
+    padding: 20px 30px;
+    border-radius: 10px;
+    width: 350px;
+    box-shadow: 0 0 15px #00bfff88;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #00bfff;
+  }
+  input, textarea, button {
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 1rem;
+  }
+  input, textarea {
+    resize: none;
+  }
+  button {
+    background: #00bfff;
+    color: #222;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background: #008fcc;
+  }
+  .status {
+    text-align: center;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>إرسال رسالة</h1>
+  <input id="token" type="text" placeholder="أدخل التوكن" />
+  <textarea id="message" rows="5" placeholder="أدخل الرسالة"></textarea>
+  <button onclick="sendMessage()">إرسال</button>
+  <p class="status" id="status"></p>
+</div>
+
+<script>
+  async function sendMessage() {
+    const token = document.getElementById("token").value.trim();
+    const message = document.getElementById("message").value.trim();
+    const statusEl = document.getElementById("status");
+
+    if (!token || !message) {
+      statusEl.textContent = "⚠️ يرجى إدخال التوكن والرسالة.";
+      statusEl.style.color = "orange";
+      return;
+    }
+
+    statusEl.textContent = "⏳ جاري الإرسال...";
+    statusEl.style.color = "#00bfff";
+
+    try {
+      // ضع هنا رابط الـ API الخاص بك
+      // مثال: http://your-server-ip:5000/send
+      const response = await fetch("http://172.18.1.2:5000/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, message })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        statusEl.textContent = "✅ تم الإرسال بنجاح!";
+        statusEl.style.color = "limegreen";
+      } else {
+        statusEl.textContent = `❌ حدث خطأ: ${data.error || "خطأ غير معروف"}`;
+        statusEl.style.color = "red";
+      }
+    } catch (err) {
+      statusEl.textContent = "❌ فشل الاتصال بالخادم.";
+      statusEl.style.color = "red";
+    }
+  }
+</script>
+
+</body>
+</html>
